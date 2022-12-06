@@ -1,39 +1,33 @@
-use std::collections::{HashMap, HashSet};
-
-use itertools::Itertools;
-
 fn main() {
     println!("{}", part_1(include_str!("day6.input")));
     println!("{}", part_2(include_str!("day6.input")));
 }
 
 fn part_1(s: &str) -> usize {
-    s.chars()
-        .tuple_windows()
-        .enumerate()
-        .find(|(_, (a, b, c, d))| [a, b, c, d].iter().collect::<HashSet<_>>().iter().count() == 4)
-        .unwrap()
-        .0
-        + 4
+    solve(s, 4)
 }
 
 fn part_2(s: &str) -> usize {
+    solve(s, 14)
+}
+
+fn solve(s: &str, unique: usize) -> usize {
     let s = s.as_bytes();
-    let mut map = s.iter().take(14).fold(HashMap::new(), |mut map, c| {
-        (*map.entry(c).or_insert(0)) += 1;
-        map
+    let mut letters = s.iter().take(unique).fold([0_u8; 26], |mut v, c| {
+        v[(c - b'a') as usize] += 1;
+        v
     });
 
-    if map.values().filter(|v| **v == 1).count() == 14 {
-        return 14;
+    if letters.iter().filter(|v| **v == 1).count() == unique {
+        return unique;
     }
 
-    for i in 0..s.len() - 14 {
-        (*map.get_mut(&s[i]).unwrap()) -= 1;
-        (*map.entry(&s[i + 14]).or_insert(0)) += 1;
+    for i in 0..s.len() - unique {
+        letters[(s[i] - b'a') as usize] -= 1;
+        letters[(s[i + unique] - b'a') as usize] += 1;
 
-        if map.values().filter(|v| **v == 1).count() == 14 {
-            return i + 15;
+        if letters.iter().filter(|v| **v == 1).count() == unique {
+            return i + unique + 1;
         }
     }
 
