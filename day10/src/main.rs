@@ -5,38 +5,36 @@ fn main() {
     part_2(&input);
 }
 
-fn part_1(vec: &[(isize, isize)]) -> isize {
+fn part_1(vec: &[isize]) -> isize {
     vec.iter()
-        .filter(|(cycle, _)| (cycle + 20) % 40 == 0)
-        .map(|(cycle, strength)| cycle * strength)
+        .enumerate()
+        .filter(|(cycle, _)| (cycle + 1 + 20) % 40 == 0)
+        .map(|(cycle, strength)| (cycle as isize + 1) * strength)
         .sum()
 }
 
-fn part_2(vec: &[(isize, isize)]) {
-    vec.iter().skip(1).fold(0, |sprite, (cycle, strength)| {
-        if (sprite..sprite + 3).contains(&((*cycle - 1) % 40)) {
+fn part_2(vec: &[isize]) {
+    vec.iter().enumerate().for_each(|(cycle, sprite)| {
+        if sprite.abs_diff(cycle as isize % 40) <= 1 {
             print!("#");
         } else {
             print!(".");
         }
 
-        if (cycle - 1) % 40 == 0 {
+        if (cycle + 1) % 40 == 0 {
             println!();
         }
-
-        *strength
     });
 }
 
-fn map_input(input: &str) -> Vec<(isize, isize)> {
+fn map_input(input: &str) -> Vec<isize> {
     let mut vec = Vec::new();
 
     input
         .lines()
         .flat_map(|l| l.split_whitespace().map(|x| str::parse::<isize>(x)))
-        .enumerate()
-        .fold(1, |strength, (cycle, value)| {
-            vec.push((cycle as isize + 1, strength));
+        .fold(1, |strength, value| {
+            vec.push(strength);
 
             match value {
                 Err(_) => strength,
