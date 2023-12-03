@@ -1,26 +1,38 @@
+use std::collections::HashMap;
+
 use day_3::*;
 use itertools::Itertools;
 
 fn main() {
-    let input = include_str!("../input1.txt");
-    let answer = part1(input);
+    let input = include_str!("../input2.txt");
+    let answer = part2(input);
     println!("{answer}");
 }
 
-fn part1(input: &str) -> u32 {
+fn part2(input: &str) -> u32 {
     let width = input.lines().next().map(|l| l.len()).unwrap_or(0);
     let symbol_positions = get_symbol_positions(input);
     let numbers = get_numbers(input, width);
 
     numbers
         .into_iter()
-        .filter_map(|x| {
-            if symbol_positions.iter().any(|p| x.is_adjacent(*p, width)) {
-                Some(x.value)
-            } else {
-                None
+        .fold(HashMap::new(), |mut acc, x| {
+            let adgacents: Vec<usize> = symbol_positions
+                .iter()
+                .filter(|p| x.is_adjacent(**p, width))
+                .map(|x| *x)
+                .collect();
+
+            for p in adgacents {
+                let entry = acc.entry(p).or_insert(Vec::new());
+                entry.push(x.value);
             }
+
+            acc
         })
+        .iter()
+        .filter(|(_, x)| x.len() == 2)
+        .map(|(_, x)| x.iter().product::<u32>())
         .sum()
 }
 
@@ -63,7 +75,7 @@ fn get_symbol_positions(input: &str) -> Vec<usize> {
         .chars()
         .filter(|x| !x.is_ascii_whitespace())
         .enumerate()
-        .filter(|(_, x)| *x != '.' && !x.is_ascii_digit())
+        .filter(|(_, x)| *x == '*')
         .map(|(i, _)| i)
         .collect()
 }
@@ -73,7 +85,7 @@ mod tests {
     use crate::*;
 
     #[test]
-    fn test_part1() {
+    fn test_part2() {
         const INPUT: &str = r#"467..114..
         ...*......
         ..35..633.
@@ -85,6 +97,6 @@ mod tests {
         ...$.*....
         .664.598.."#;
 
-        assert_eq!(4361, part1(INPUT));
+        assert_eq!(467835, part2(INPUT));
     }
 }
