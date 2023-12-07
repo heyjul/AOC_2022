@@ -11,11 +11,14 @@ pub fn parse_input(input: &str) -> Vec<(Vec<Card>, usize)> {
         .collect()
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, PartialOrd)]
+#[derive(Debug, PartialEq, Eq, Hash, PartialOrd, Clone, Copy)]
 pub enum Card {
+    // J of part 2
+    J,
     N(usize),
     T,
-    J,
+    // J of part 1
+    // J,
     Q,
     K,
     A,
