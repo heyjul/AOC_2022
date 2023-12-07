@@ -9,21 +9,6 @@ fn main() {
 }
 
 fn process(input: &str) -> usize {
-    const CARDS: [Card; 13] = [
-        Card::J,
-        Card::N(2),
-        Card::N(3),
-        Card::N(4),
-        Card::N(5),
-        Card::N(6),
-        Card::N(7),
-        Card::N(8),
-        Card::N(9),
-        Card::T,
-        Card::Q,
-        Card::K,
-        Card::A,
-    ];
     let mut values = parse_input(input);
     values.sort_unstable_by(|(a, _), (b, _)| {
         let mut a_map = a.iter().fold(HashMap::new(), |mut acc, x| {
